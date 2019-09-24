@@ -1,0 +1,7 @@
+{
+	"STRIPE":{
+		"sec":"xxx",
+		"pub":"xxx"
+	},
+	"DEBUG":true
+}
