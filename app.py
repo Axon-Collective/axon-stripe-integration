@@ -1,6 +1,6 @@
 import os
 import stripe
-from flask import Flask, jsonify, request, Response
+from flask import Flask, request
 from flask_cors import CORS
 
 
@@ -12,7 +12,7 @@ app = Flask('Stripe')
 #NOTE:global_config.json is in gitignore
 
 os_env = os.environ
-
+DEBUG = False
 if 'DEBUG' in os_env:
 	DEBUG = os_env['DEBUG']
 
@@ -37,7 +37,7 @@ try:
 
 except:
 	print("No Config File")
-	#continue without config file
+	#don't continue without config file
 
 #--------------------------------------------------
 CORS(app, resources={r'/*': {'origins': '*'}})
@@ -50,22 +50,14 @@ def pub_key():
 def charge_card():
 	stripe.api_key = app.config['STRIPE'].get("sec")
 	data=request.json
-	print(data)
-	amount = data.get('amount')
-	currency = data.get('currency')
-	description = data.get('description')
-	destination = data.get('destination')
-	token = data.get('token')
-	capture = data.get('capture')
 	charge = stripe.Charge.create(
-		amount=amount, 
-		currency=currency,
-		description=description,
-		source=token,
-		capture=capture,
-		transfer_group=destination
+		amount=data.get('amount'), 
+		currency=data.get('currency'),
+		description=data.get('description'),
+		source=data.get('token'),
+		capture=data.get('capture'),
+		transfer_group=data.get('destination')
 	)
-	print(str(charge))
 	return {"receipt":charge.get('receipt_url'),"id":charge.get('id'),"amnt":charge.get('amount'),"status":"still need to make status logic"}
 
 
