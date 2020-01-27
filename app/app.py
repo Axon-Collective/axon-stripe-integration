@@ -24,7 +24,7 @@ else:
 if 'STRIPE_SK' in os_env:
 	stripe_sk=os_env['STRIPE_SK']
 else:
-	stripe_sk='xxx'	
+	stripe_sk='xxx'
 
 STRIPE= {
 		"sec":stripe_sk,
@@ -42,6 +42,11 @@ except:
 #--------------------------------------------------
 CORS(app, resources={r'/*': {'origins': '*'}})
 
+@app.route('/health_check', methods=['GET'])
+def health_check():
+    return {'server_status': 'OK'}
+
+
 @app.route('/pubkey', methods=['GET'])
 def pub_key():
     return {"pk":app.config['STRIPE'].get("pub")}
@@ -51,7 +56,7 @@ def charge_card():
 	stripe.api_key = app.config['STRIPE'].get("sec")
 	data=request.json
 	charge = stripe.Charge.create(
-		amount=data.get('amount'), 
+		amount=data.get('amount'),
 		currency=data.get('currency'),
 		description=data.get('description'),
 		source=data.get('token'),
@@ -63,4 +68,4 @@ def charge_card():
 
 
 if __name__ == '__main__':
-    app.run()
+    app().run(host="0.0.0.0", port="8080")
